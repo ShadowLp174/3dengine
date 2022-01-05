@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>3D Render Engine by RedTech Programming</title>
+</head>
+<body>
+  <script src="./index.js"></script>
+
+  <script>
+  var re = new RenderEngine();
+  re.load().then(() => {
+    var renderer = new Renderer(600, 400);
+    renderer.init();
+
+    let ctx = renderer.ctx;
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+	  ctx.fillStyle = 'rgba(0, 150, 255, 0.3)';
+
+    let c = renderer.display;
+    c.style.border = "1px solid black";
+
+    let center = new Vertex(5, 10, 0);
+    let cube = new Cube(center, 5);
+    center = new Vertex(5, 5, 0);
+    let rightCube = new Cube(center, 5);
+
+    renderer.render([ cube,rightCube ], c.width / 2, c.height / 2);
+
+    let cam = renderer.activeCam;
+    cam.rotation = 0;
+    cam.x = 0;
+    cam.z = 60;
+
+    window.setTimeout(() => {
+      renderer.render([ cube,rightCube ], c.width / 2, c.height / 2);
+    }, 2000)
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "registry": [
+    "cube.js", "renderer.js", "camera.js"
+  ]
+}
