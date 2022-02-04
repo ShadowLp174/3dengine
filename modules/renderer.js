@@ -50,6 +50,7 @@ class Renderer {
             var P = this.project(face[0]);//this.projectOrthographic(face[0]);
             ctx.beginPath();
             ctx.moveTo(P.x + dx, -P.y + dy);
+            ctx.arc(P.x + dx, -P.y + dy, 2, 0, 2 * Math.PI);
 
             // Draw the other vertices
             for (var k = 1, n_vertices = face.length; k < n_vertices; ++k) {
@@ -62,6 +63,37 @@ class Renderer {
             ctx.stroke();
             ctx.fill();
         }
+    }
+  }
+
+  renderScene(scene) {
+    let ctx = this.ctx;
+    let canvas = this.display;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < scene.objects.length; i++) {
+      let object = scene.objects[i];
+      for (let j = 0; j < object.faces.length; j++) {
+        var face = object.faces[j];
+        console.log(face);
+
+        ctx.save();
+        ctx.beginPath();
+
+        var P = scene.camera.project(face[0]);
+        ctx.moveTo(P.x, P.y);
+
+        for (let k = 1; k < face.length; k++) {
+          P = scene.camera.project(face[k]);
+          console.log(P);
+          ctx.lineTo(P.x, P.y);
+        }
+
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
+      }
     }
   }
 

@@ -24,16 +24,26 @@
     center = new Vertex(5, 5, 0);
     let rightCube = new Cube(center, 5);
 
-    renderer.render([ cube,rightCube ], c.width / 2, c.height / 2);
+    let plane = new Plane([new Vertex(-2, 0, -2), new Vertex(-2, 2, -2), new Vertex(2, 2, 0), new Vertex(2, -2, -2)]);
+
+    let scene = new Scene();
+    scene.width = c.width;
+    scene.height = c.height;
+    /*scene.addObject(cube);
+    scene.addObject(rightCube);*/
+    scene.addObject(plane);
+    renderer.renderScene(scene);
+
+    //renderer.render([ cube,rightCube ], c.width / 2, c.height / 2);
 
     let cam = renderer.activeCam;
     cam.rotation = 0;
     cam.x = 0;
     cam.z = 60;
 
-    window.setTimeout(() => {
+    /*window.setTimeout(() => {
       renderer.render([ cube,rightCube ], c.width / 2, c.height / 2);
-    }, 2000)
+    }, 2000)*/
   });
   </script>
 </body>

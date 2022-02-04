@@ -1,5 +1,5 @@
 {
   "registry": [
-    "cube.js", "renderer.js", "camera.js"
+    "cube.js", "renderer.js", "camera.js", "scene.js", "plane.js"
   ]
 }
