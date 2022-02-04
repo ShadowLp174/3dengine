@@ -21,20 +21,24 @@
 
     let center = new Vertex(5, 10, 0);
     let cube = new Cube(center, 5);
-    center = new Vertex(5, 5, 0);
-    let rightCube = new Cube(center, 5);
 
-    let plane = new Plane([new Vertex(-2, 0, -2), new Vertex(-2, 2, -2), new Vertex(2, 2, 0), new Vertex(2, -2, -2)]);
+    let xOff = -10;
+    let yOff = -10;
+
+    let front = new Plane([new Vertex(-2 - xOff, -2 + yOff, 0), new Vertex(-2 - xOff, 2 + yOff, 0), new Vertex(2 - xOff, 2 + yOff, 0), new Vertex(2 - xOff, -2 + yOff, 0)]);
+    let p1 = new Plane([new Vertex(2 - xOff, -2 + yOff, 0), new Vertex(2 - xOff, -2 + yOff, 2), new Vertex(2 - xOff, 2 + yOff, 2), new Vertex(2 - xOff, 2 + yOff, 0)]);
+    let p2 = new Plane([new Vertex(-2 - xOff, -2 + yOff, 0), new Vertex(-2 - xOff, -2 + yOff, 2), new Vertex(-2 - xOff, 2 + yOff, 2), new Vertex(-2 - xOff, 2 + yOff, 0)]);
+    let p3 = new Plane([new Vertex(-2 - xOff, -2 + yOff, 2), new Vertex(-2 - xOff, 2 + yOff, 2), new Vertex(2 - xOff, 2 + yOff, 2), new Vertex(2 - xOff, -2 + yOff, 2)]);
+    let p4 = new Plane([new Vertex(-2 - xOff, 2 + yOff, 0), new Vertex(-2 - xOff, 2 + yOff, 2), new Vertex(2 - xOff, 2 + yOff, 2), new Vertex(2 - xOff, 2 + yOff, 0)]);
+    let p5 = new Plane([new Vertex(-2 - xOff, -2 + yOff, 0), new Vertex(-2 - xOff, -2 + yOff, 2), new Vertex(2 - xOff, -2 + yOff, 2), new Vertex(2 - xOff, -2 + yOff, 0)]);
 
     let scene = new Scene();
     scene.width = c.width;
     scene.height = c.height;
-    /*scene.addObject(cube);
-    scene.addObject(rightCube);*/
-    scene.addObject(plane);
+    scene.addObjects([front, p1, p2, p3, p4, p5]);
     renderer.renderScene(scene);
 
-    //renderer.render([ cube,rightCube ], c.width / 2, c.height / 2);
+    //renderer.render([ cube ], c.width / 2, c.height / 2);
 
     let cam = renderer.activeCam;
     cam.rotation = 0;

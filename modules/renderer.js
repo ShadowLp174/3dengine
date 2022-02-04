@@ -50,7 +50,7 @@ class Renderer {
             var P = this.project(face[0]);//this.projectOrthographic(face[0]);
             ctx.beginPath();
             ctx.moveTo(P.x + dx, -P.y + dy);
-            ctx.arc(P.x + dx, -P.y + dy, 2, 0, 2 * Math.PI);
+            //ctx.arc(P.x + dx, -P.y + dy, 2, 0, 2 * Math.PI);
 
             // Draw the other vertices
             for (var k = 1, n_vertices = face.length; k < n_vertices; ++k) {
@@ -77,7 +77,6 @@ class Renderer {
         var face = object.faces[j];
         console.log(face);
 
-        ctx.save();
         ctx.beginPath();
 
         var P = scene.camera.project(face[0]);
@@ -85,14 +84,12 @@ class Renderer {
 
         for (let k = 1; k < face.length; k++) {
           P = scene.camera.project(face[k]);
-          console.log(P);
           ctx.lineTo(P.x, P.y);
         }
 
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
-        ctx.restore();
       }
     }
   }
