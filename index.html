@@ -10,6 +10,7 @@
     <p>X: </p>
     <p>Y: </p>
     <p>Z: </p>
+    <p>HorizontalRot: </p>
   </div>
 
   <script>
@@ -53,7 +54,7 @@
       center.x = parseFloat(event.target.value);
       cube.changePos(center);
       renderer.renderScene(scene);
-      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z;
+      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z + " HorizontalRot: " + cube.horizontalRotation;
     });
     var yPos = document.createElement("input");
     yPos.type = "range";
@@ -62,7 +63,7 @@
       center.y = parseFloat(event.target.value);
       cube.changePos(center);
       renderer.renderScene(scene);
-      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z;
+      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z + " HorizontalRot: " + cube.horizontalRotation;
     });
     var zPos = document.createElement("input");
     zPos.type = "range";
@@ -71,22 +72,30 @@
       center.z = parseFloat(event.target.value);
       cube.changePos(center);
       renderer.renderScene(scene);
-      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z;
+      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z + " HorizontalRot: " + cube.horizontalRotation;
+    });
+    var hRot = document.createElement("input");
+    hRot.type = "range";
+    hRot.min = 0; hRot.max = 360; hRot.defaultValue = 0;
+    hRot.addEventListener("input", (event) => {
+      cube.setHorizontalRotation(parseFloat(event.target.value));
+      renderer.renderScene(scene);
+      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z + " HorizontalRot: " + cube.horizontalRotation;
     });
 
     var controls = document.getElementById("controls");
     controls.children[0].appendChild(xPos);
     controls.children[1].appendChild(yPos);
     controls.children[2].appendChild(zPos);
+    controls.children[3].appendChild(hRot);
     controls.appendChild(display);
 
-    display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z;
+    display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z + " HorizontalRot: " + cube.horizontalRotation;
 
-    //renderer.render([ cube ], c.width / 2, c.height / 2);
-
-    /*window.setTimeout(() => {
-      renderer.render([ cube,rightCube ], c.width / 2, c.height / 2);
-    }, 2000)*/
+    window.setTimeout(() => {
+      /*cube.setHorizontalRotation(10);
+      renderer.renderScene(scene);*/
+    }, 2000)
   });
   </script>
 </body>

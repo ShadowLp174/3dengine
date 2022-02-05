@@ -2,6 +2,8 @@ class Cube {
   constructor(center, size) {
     this.color = {};
     this.size = size;
+    this.center = center;
+    this.horizontalRotation = 0;
 
     this.initVertices(center, size);
     return this;
@@ -28,6 +30,7 @@ class Cube {
       [v[4], v[5], v[6], v[7]],
       [v[1], v[2], v[6], v[5]]
     ];
+    this.applyRotation();
   }
 
   set faceColor(color) {
@@ -40,11 +43,28 @@ class Cube {
   }
   get lineColor() {return this.color.line}
 
-  rotate(angle) {
+  applyRotation() {
+    let x = this.horizontalRotation;
+    for (let i = 0; i < this.vertices.length; i++) {
+      let v = this.vertices[i];
+      let newX = this.center.x + (v.x-this.center.x)*Math.cos(x) - (v.z-this.center.z)*Math.sin(x);
+      let newZ = this.center.z + (v.x-this.center.x)*Math.sin(x) + (v.z-this.center.z)*Math.cos(x)
+      this.vertices[i].x = newX;
+      this.vertices[i].z = newZ;
+    }
+  }
 
+  setHorizontalRotation(angle) {
+    this.horizontalRotation = this.toRadians(angle);
+    this.applyRotation();
   }
   changePos(vertex) {
+    this.center = vertex;
     this.initVertices(vertex, this.size);
     return this;
+  }
+
+  toRadians(degrees) {
+    return degrees * Math.PI / 180;
   }
 }
