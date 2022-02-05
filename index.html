@@ -13,6 +13,10 @@
     <p>HorizontalRot: </p>
   </div>
 
+  <canvas id="generated" style="border: 1px solid black"></canvas>
+
+  <p id="loading">Loading...</p>
+
   <script>
   var re = new RenderEngine();
   re.load().then(() => {
@@ -28,6 +32,7 @@
 
     let center = new Vertex(12, -3, 0);
     let cube = new Cube(center, 5);
+    cube.faceColor[1] = "red";
 
     /*let xOff = -10;
     let yOff = -10;
@@ -78,7 +83,7 @@
     hRot.type = "range";
     hRot.min = 0; hRot.max = 360; hRot.defaultValue = 0;
     hRot.addEventListener("input", (event) => {
-      cube.setHorizontalRotation(parseFloat(event.target.value));
+      cube.setHorizontalRotation(parseFloat(event.target.value) / 10);
       renderer.renderScene(scene);
       display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z + " HorizontalRot: " + cube.horizontalRotation;
     });
@@ -92,10 +97,36 @@
 
     display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z + " HorizontalRot: " + cube.horizontalRotation;
 
+    cube.setHorizontalRotation(0);
+    renderer.renderScene(scene);
+
+    document.querySelector("p#loading").remove();
+
     window.setTimeout(() => {
       /*cube.setHorizontalRotation(10);
       renderer.renderScene(scene);*/
     }, 2000)
+
+    // generating stuff ;)
+    var r = new Renderer(600, 400, document.querySelector("#generated"));
+    r.init();
+
+    let ct = r.ctx;
+    ct.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+	  ct.fillStyle = 'rgba(0, 150, 255, 0.3)';
+
+    let s = new Scene();
+    s.width = r.display.width;
+    s.height = r.display.height;
+    for (let i = 1; i < 4; i++) {
+      for (let j = 0; j < 5; j++) {
+        let c = new Vertex(j*5 - 12.5, -20, i*5);
+        let cu = new Cube(c, 5);
+        s.addObject(cu);
+      }
+    }
+
+    r.renderScene(s);
   });
   </script>
 </body>

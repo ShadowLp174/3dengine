@@ -1,9 +1,14 @@
 class Cube {
   constructor(center, size) {
     this.color = {};
+    this.colors = {
+      faces: []
+    }
     this.size = size;
     this.center = center;
     this.horizontalRotation = 0;
+
+    this.faceColor = this.colors.faces;
 
     this.initVertices(center, size);
     return this;
@@ -32,11 +37,6 @@ class Cube {
     ];
     this.applyRotation();
   }
-
-  set faceColor(color) {
-    this.color.face = color;
-  }
-  get faceColor() {return this.color.face}
 
   set lineColor(color) {
     this.color.line = color;

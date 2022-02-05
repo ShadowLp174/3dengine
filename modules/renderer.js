@@ -23,6 +23,7 @@ class Renderer {
     if (element) {
       this.ctx = element.getContext("2d");
       this.display = element;
+      this.existing = true;
     } else {
       this.display = document.createElement('canvas');
       this.ctx = this.display.getContext("2d");
@@ -76,7 +77,12 @@ class Renderer {
       for (let j = 0; j < object.faces.length; j++) {
         var face = object.faces[j];
 
+        ctx.save();
         ctx.beginPath();
+
+        if (object.colors.faces[j]) {
+          ctx.fillStyle = object.colors.faces[j];
+        }
 
         var P = scene.camera.project(face[0]);
         ctx.moveTo(P.x, P.y);
@@ -89,6 +95,7 @@ class Renderer {
         ctx.closePath();
         ctx.stroke();
         ctx.fill();
+        ctx.restore();
       }
     }
   }
@@ -126,7 +133,7 @@ class Renderer {
   init(container) {
     if (typeof container == "string") {
       document.querySelector(container).appendChild(this.display);
-    } else {
+    } else if (!this.existing) {
       document.body.appendChild(this.display);
     }
   }
