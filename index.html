@@ -6,6 +6,12 @@
 <body>
   <script src="./index.js"></script>
 
+  <div id="controls">
+    <p>X: </p>
+    <p>Y: </p>
+    <p>Z: </p>
+  </div>
+
   <script>
   var re = new RenderEngine();
   re.load().then(() => {
@@ -19,10 +25,10 @@
     let c = renderer.display;
     c.style.border = "1px solid black";
 
-    let center = new Vertex(5, 10, 0);
+    let center = new Vertex(12, -3, 0);
     let cube = new Cube(center, 5);
 
-    let xOff = -10;
+    /*let xOff = -10;
     let yOff = -10;
 
     let front = new Plane([new Vertex(-2 - xOff, -2 + yOff, 0), new Vertex(-2 - xOff, 2 + yOff, 0), new Vertex(2 - xOff, 2 + yOff, 0), new Vertex(2 - xOff, -2 + yOff, 0)]);
@@ -30,20 +36,53 @@
     let p2 = new Plane([new Vertex(-2 - xOff, -2 + yOff, 0), new Vertex(-2 - xOff, -2 + yOff, 2), new Vertex(-2 - xOff, 2 + yOff, 2), new Vertex(-2 - xOff, 2 + yOff, 0)]);
     let p3 = new Plane([new Vertex(-2 - xOff, -2 + yOff, 2), new Vertex(-2 - xOff, 2 + yOff, 2), new Vertex(2 - xOff, 2 + yOff, 2), new Vertex(2 - xOff, -2 + yOff, 2)]);
     let p4 = new Plane([new Vertex(-2 - xOff, 2 + yOff, 0), new Vertex(-2 - xOff, 2 + yOff, 2), new Vertex(2 - xOff, 2 + yOff, 2), new Vertex(2 - xOff, 2 + yOff, 0)]);
-    let p5 = new Plane([new Vertex(-2 - xOff, -2 + yOff, 0), new Vertex(-2 - xOff, -2 + yOff, 2), new Vertex(2 - xOff, -2 + yOff, 2), new Vertex(2 - xOff, -2 + yOff, 0)]);
+    let p5 = new Plane([new Vertex(-2 - xOff, -2 + yOff, 0), new Vertex(-2 - xOff, -2 + yOff, 2), new Vertex(2 - xOff, -2 + yOff, 2), new Vertex(2 - xOff, -2 + yOff, 0)]);*/
 
     let scene = new Scene();
     scene.width = c.width;
     scene.height = c.height;
-    scene.addObjects([front, p1, p2, p3, p4, p5]);
+    //scene.addObjects([front, p1, p2, p3, p4, p5, cube]);
+    scene.addObject(cube);
     renderer.renderScene(scene);
 
-    //renderer.render([ cube ], c.width / 2, c.height / 2);
+    var display = document.createElement("p");
+    var xPos = document.createElement("input");
+    xPos.type = "range";
+    xPos.min = -20; xPos.max = 20; xPos.defaultValue = 12;
+    xPos.addEventListener("input", (event) => {
+      center.x = parseFloat(event.target.value);
+      cube.changePos(center);
+      renderer.renderScene(scene);
+      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z;
+    });
+    var yPos = document.createElement("input");
+    yPos.type = "range";
+    yPos.min = -20; yPos.max = 20; yPos.defaultValue = -3;
+    yPos.addEventListener("input", (event) => {
+      center.y = parseFloat(event.target.value);
+      cube.changePos(center);
+      renderer.renderScene(scene);
+      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z;
+    });
+    var zPos = document.createElement("input");
+    zPos.type = "range";
+    zPos.min = -5; zPos.max = 20; zPos.defaultValue = 0;
+    zPos.addEventListener("input", (event) => {
+      center.z = parseFloat(event.target.value);
+      cube.changePos(center);
+      renderer.renderScene(scene);
+      display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z;
+    });
 
-    let cam = renderer.activeCam;
-    cam.rotation = 0;
-    cam.x = 0;
-    cam.z = 60;
+    var controls = document.getElementById("controls");
+    controls.children[0].appendChild(xPos);
+    controls.children[1].appendChild(yPos);
+    controls.children[2].appendChild(zPos);
+    controls.appendChild(display);
+
+    display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z;
+
+    //renderer.render([ cube ], c.width / 2, c.height / 2);
 
     /*window.setTimeout(() => {
       renderer.render([ cube,rightCube ], c.width / 2, c.height / 2);

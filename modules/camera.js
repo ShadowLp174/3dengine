@@ -21,8 +21,12 @@ class Camera {
     let x = (vertex.x*this.planeOffset)/distance;
     let y = (vertex.y*this.planeOffset)/distance;
 
-    x = -x + this.scene.width / 2;
+    x += this.scene.width / 2;
     y = -y + this.scene.height / 2;
+
+    vertex.x /= 10;
+    vertex.y /= 10;
+    vertex.z /= 10;
 
     return new Vertex2D(x, y);
   }

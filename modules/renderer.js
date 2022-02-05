@@ -75,7 +75,6 @@ class Renderer {
       let object = scene.objects[i];
       for (let j = 0; j < object.faces.length; j++) {
         var face = object.faces[j];
-        console.log(face);
 
         ctx.beginPath();
 
