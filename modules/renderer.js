@@ -15,9 +15,8 @@ class Vertex2D {
 }
 
 class Matrix {
-  constructor(rows, columns) {
+  constructor(rows) {
     this.rows = rows;
-    this.columns = columns;
 
     return this;
   }
@@ -29,6 +28,7 @@ class Vector {
     let y = start.y - end.y;
     let z = start.z - end.z;
     this.length = Math.sqrt(x + y + z);
+    this.matrix = new Matrix([x, y, z]);
 
     return this;
   }
