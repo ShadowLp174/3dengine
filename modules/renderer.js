@@ -14,7 +14,7 @@ class Vertex2D {
   }
 }
 
-class Matrix() {
+class Matrix {
   constructor(rows, columns) {
     this.rows = rows;
     this.columns = columns;
@@ -23,7 +23,7 @@ class Matrix() {
   }
 }
 
-class Vector() {
+class Vector {
   constructor(start, end) {
     let x = start.x - end.x;
     let y = start.y - end.y;
