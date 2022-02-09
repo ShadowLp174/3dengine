@@ -14,6 +14,26 @@ class Vertex2D {
   }
 }
 
+class Matrix() {
+  constructor(rows, columns) {
+    this.rows = rows;
+    this.columns = columns;
+
+    return this;
+  }
+}
+
+class Vector() {
+  constructor(start, end) {
+    let x = start.x - end.x;
+    let y = start.y - end.y;
+    let z = start.z - end.z;
+    this.length = Math.sqrt(x, y, z);
+
+    return this;
+  }
+}
+
 /*
 @param {HTMLElement}; Must be a HTML Canvas Element; Optional
 */

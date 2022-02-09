@@ -23,6 +23,9 @@
     var renderer = new Renderer(600, 400);
     renderer.init();
 
+    let a = new Vector(new Vertex(10, 10, 10), new Vertex(12, 12, 12));
+    console.log(a.length);
+
     let ctx = renderer.ctx;
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
 	  ctx.fillStyle = 'rgba(0, 150, 255, 0.3)';
