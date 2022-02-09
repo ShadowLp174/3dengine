@@ -28,7 +28,7 @@ class Vector {
     let x = start.x - end.x;
     let y = start.y - end.y;
     let z = start.z - end.z;
-    this.length = Math.sqrt(x, y, z);
+    this.length = Math.sqrt(x + y + z);
 
     return this;
   }
