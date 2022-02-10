@@ -20,6 +20,10 @@ class Matrix {
 
     return this;
   }
+
+  add(m2) {
+    return new Matrix(this.rows.map((row, i) => row.map((value, j) => value + m2.rows[i][j])));
+  }
 }
 
 class Vector {
@@ -27,7 +31,8 @@ class Vector {
     let x = start.x - end.x;
     let y = start.y - end.y;
     let z = start.z - end.z;
-    this.length = Math.sqrt(x + y + z);
+    console.log(x, y, z);
+    this.length = Math.sqrt(Math.abs(x + y + z));
     this.matrix = new Matrix([x, y, z]);
 
     return this;
