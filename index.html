@@ -17,6 +17,8 @@
 
   <p id="loading">Loading...</p>
 
+  <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
   <script>
   var re = new RenderEngine();
   re.load().then(() => {
@@ -101,7 +103,7 @@
     display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z + " HorizontalRot: " + cube.horizontalRotation;
 
     cube.setHorizontalRotation(0);
-    renderer.renderScene(scene);
+    renderer.renderScene(scene, true);
 
     document.querySelector("p#loading").remove();
 

@@ -13,6 +13,13 @@ class Vertex2D {
     return this;
   }
 }
+class Polygon2D {
+  constructor(vertices) { // vertices = [Vertex2D, ...]
+    this.vertices = vertices;
+
+    return this;
+  }
+}
 
 class Matrix {
   constructor(rows) {
@@ -24,6 +31,9 @@ class Matrix {
   add(m2) {
     return new Matrix(this.rows.map((row, i) => row.map((value, j) => value + m2.rows[i][j])));
   }
+  scale(scalar) {
+    return new Matrix(this.rows.map((row, i) => row.map((value, j) => value*scalar)));
+  }
 }
 
 class Vector {
@@ -31,10 +41,32 @@ class Vector {
     let x = start.x - end.x;
     let y = start.y - end.y;
     let z = start.z - end.z;
-    console.log(x, y, z);
     this.length = Math.sqrt(Math.abs(x + y + z));
     this.matrix = new Matrix([x, y, z]);
 
+    this.start = start;
+    this.end = end;
+
+    return this;
+  }
+}
+class Vector2D {
+  constructor(start, end) { // Vertex2D
+    let x = start.x - end.x;
+    let y = start.y - end.y;
+    this.start = start;
+    this.end = end;
+
+    this.matrix = new Matrix([x, y]);
+  }
+}
+
+class ProjectedLine {
+  constructor(start, end, originalStart, originalEnd) {
+    this.start = start;
+    this.end = end;
+    this.originalStart = originalStart;
+    this.originalEnd = originalEnd;
     return this;
   }
 }
@@ -92,10 +124,12 @@ class Renderer {
     }
   }
 
-  renderScene(scene) {
+  renderScene(scene, debugging) {
     let ctx = this.ctx;
     let canvas = this.display;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let vertices = [], lines = [];
 
     for (let i = 0; i < scene.objects.length; i++) {
       let object = scene.objects[i];
@@ -111,10 +145,16 @@ class Renderer {
 
         var P = scene.camera.project(face[0]);
         ctx.moveTo(P.x, P.y);
+        vertices.push(P);
+
+        let last = [P, face[0]];
 
         for (let k = 1; k < face.length; k++) {
           P = scene.camera.project(face[k]);
           ctx.lineTo(P.x, P.y);
+          vertices.push(P);
+          lines.push(new ProjectedLine(last[0], P, last[1], face[k]));
+          last = [P, face[k]];
         }
 
         ctx.closePath();
@@ -122,6 +162,45 @@ class Renderer {
         ctx.fill();
         ctx.restore();
       }
+    }
+    if (debugging) {
+      console.log(vertices);
+      console.log(lines);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      let intersections = scene.camera.pointModelIntersections(lines);
+
+      for (let i = 0; i < intersections.length; i++) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.fillStyle = "green";
+        ctx.strokeStyle = "green";
+
+        ctx.arc(intersections[i].x, intersections[i].y, 2, 0, 2 * Math.PI);
+
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      console.log("intersections", intersections);
+
+
+      vertices.forEach(vertex => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.fillStyle = "red";
+        ctx.strokeStyle = "red";
+
+        ctx.arc(vertex.x, vertex.y, 1, 0, 2 * Math.PI);
+
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      });
     }
   }
 
