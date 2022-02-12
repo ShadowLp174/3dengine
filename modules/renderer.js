@@ -168,7 +168,7 @@ class Renderer {
       console.log(lines);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
+
       let intersections = scene.camera.pointModelIntersections(lines);
 
       for (let i = 0; i < intersections.length; i++) {
@@ -184,6 +184,18 @@ class Renderer {
         ctx.stroke();
         ctx.restore();
       }
+
+      lines.forEach((line) => {
+        ctx.save();
+        ctx.beginPath();
+
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
+
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+      });
 
       console.log("intersections", intersections);
 

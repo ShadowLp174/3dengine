@@ -93,6 +93,8 @@ class Camera {
       return c;
     }
 
+
+
     function onLine(vertex, vector) {
       if (distance(vertex, vector.start) + distance(vertex, vector.end) == distance(vector.start, vector.end))
         return true;
@@ -101,7 +103,7 @@ class Camera {
 
     var p = new Vertex2D(px, py);
 
-    if (!onLine(p, v1) && !onLine(p, v2)) return null;
+    if (!onLine(p, v1) || !onLine(p, v2)) return null;
 
   	return {v: p};
   }
@@ -123,10 +125,8 @@ class Camera {
           let lineVector2 = new Vector2D(lines[j].start, lines[j].end);
           let intersect = this.calculateIntersection(lineVector1, lineVector2);//this.lineIntersection(lineVector1, lineVector2);
           if (intersect) {
-            if (intersect.v.x < this.scene.width && intersect.v.x > 0 && intersect.v.y > 0 && intersect.v.y < this.scene.height) {
-              if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
-                vertices.push(intersect.v);
-              }
+            if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
+              vertices.push(intersect.v);
             }
           }
         }
