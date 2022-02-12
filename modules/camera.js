@@ -37,6 +37,14 @@ class Camera {
     return false;
   }
 
+  faculty(num) {
+    let res = num;
+    for (let i = 1; i < num; i++) {
+      res *= num - i;
+    }
+    return res;
+  }
+
   lineIntersection(vector1, vector2) { // original by paul bourke
     let x1 = vector1.start.x; let y1 = vector1.start.y;
     let x2 = vector1.end.x; let y2 = vector1.end.y;
@@ -59,7 +67,7 @@ class Camera {
     }
   }
 
-  calculateIntersection(v1, v2) {
+  calculateIntersection(v1, v2, includeLineVertices) {
     let p1 = new Vertex2D(v1.start.x, v1.start.y);
     let p2 = new Vertex2D(v1.end.x, v1.end.y);
     let p3 = new Vertex2D(v2.start.x, v2.start.y);
@@ -103,6 +111,8 @@ class Camera {
 
     var p = new Vertex2D(px, py);
 
+    if (p.equals(v1.start) || p.equals(v1.end) || p.equals(v2.start) || p.equals(v2.end)) if (!includeLineVertices) return null;
+
     if (!onLine(p, v1) || !onLine(p, v2)) return null;
 
   	return {v: p};
@@ -116,6 +126,14 @@ class Camera {
     }
   ]
   */
+  generateConbinations(arr) {
+    let res = [];
+    let biCo = this.faculty(arr.length)/this.faculty(arr.length - 2); // binomial coefficient = n!/(n-k)!; n = count of object; k = number of objects selected in one run
+    for (let i = 0; i < biCo; i++) {
+      
+    }
+    return res;
+  }
   pointModelIntersections(lines) { // lines = [ProjectedLine]
     let vertices = [];
     for (let i = 0; i < lines.length; i++) {

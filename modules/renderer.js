@@ -12,6 +12,8 @@ class Vertex2D {
     this.y = y;
     return this;
   }
+  
+  equals(v) {return v.x == this.x && v.y == this.y}
 }
 class Polygon2D {
   constructor(vertices) { // vertices = [Vertex2D, ...]
