@@ -195,14 +195,14 @@ class Camera {
             if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
               vertices.push(intersect.v);
             }
-            let i1 = new IntersectionLine(lineVector1.start, intersect.v, lines[i].start);
-            let i2 = new IntersectionLine(lineVector1.end, intersect.v, lines[i].end);
-            let i3 = new IntersectionLine(lineVector2.start, intersect.v, lines[j].start);
-            let i4 = new IntersectionLine(lineVector2.end, intersect.v, lines[j].end);
+            let i1 = new IntersectionLine(lineVector1.start, intersect.v, lines[i].originalStart);
+            let i2 = new IntersectionLine(lineVector1.end, intersect.v, lines[i].originalEnd);
+            let i3 = new IntersectionLine(lineVector2.start, intersect.v, lines[j].originalStart);
+            let i4 = new IntersectionLine(lineVector2.end, intersect.v, lines[j].originalEnd);
             inLines.push(i1, i2, i3, i4);
           } else {
-            let i1 = new IntersectionLine(lineVector1.start, lineVector1.end, lines[i].start);
-            let i2 = new IntersectionLine(lineVector2.start, lineVector2.end, lines[j].start);
+            let i1 = new IntersectionLine(lineVector1.start, lineVector1.end, lines[i].originalStart);
+            let i2 = new IntersectionLine(lineVector2.start, lineVector2.end, lines[j].originalStart);
             inLines.push(i1, i2);
           }
         }
