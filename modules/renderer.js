@@ -5,6 +5,8 @@ class Vertex {
     this.z = parseFloat(z);
     return this;
   }
+
+  equals(v) {return v.x == this.x && v.y == this.y && v.z == this.z}
 }
 class Vertex2D {
   constructor(x, y) {
@@ -12,12 +14,20 @@ class Vertex2D {
     this.y = y;
     return this;
   }
-  
+
   equals(v) {return v.x == this.x && v.y == this.y}
 }
 class Polygon2D {
   constructor(vertices) { // vertices = [Vertex2D, ...]
     this.vertices = vertices;
+
+    return this;
+  }
+}
+class ProjectedPolygon {
+  constructor(vertices, face) { // vertices = all projected vertices; face = unprojected face vertices
+    this.vertices = vertices;
+    this.face = face;
 
     return this;
   }
@@ -71,6 +81,32 @@ class ProjectedLine {
     this.originalEnd = originalEnd;
     return this;
   }
+}
+class IntersectionLine {
+  constructor(start, end, originalStart) {
+    this.start = start;
+    this.end = end;
+    this.originalStart = originalStart;
+
+    /*let dx = this.start.x - this.end.x;
+    let dy = this.start.y - this.end.y;
+    let h = Math.sqrt(dx*dx + dy*dy);
+
+    h /= 2;
+    let alpha = Math.atan(dy/dy);
+
+    let x = Math.sin(alpha)*h;
+    let y = Math.cos(alpha)*h;
+
+    let middle = new Vertex2D(start.x - x, end.y - y);
+    this.middle = middle;*/
+
+    this.z = originalStart.z;
+    this.x = originalStart.x;
+    return this;
+  }
+
+  equals(line) {return line.start.equals(this.start) && line.end.equals(this.end) && line.originalStart.equals(this.originalStart)}
 }
 
 /*
@@ -131,7 +167,7 @@ class Renderer {
     let canvas = this.display;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    let vertices = [], lines = [];
+    let vertices = [], lines = [], polys = [];
 
     for (let i = 0; i < scene.objects.length; i++) {
       let object = scene.objects[i];
@@ -148,6 +184,7 @@ class Renderer {
         var P = scene.camera.project(face[0]);
         ctx.moveTo(P.x, P.y);
         vertices.push(P);
+        let ver = [P];
 
         let last = [P, face[0]];
 
@@ -157,7 +194,10 @@ class Renderer {
           vertices.push(P);
           lines.push(new ProjectedLine(last[0], P, last[1], face[k]));
           last = [P, face[k]];
+          ver.push(P);
         }
+
+        polys[i] = new ProjectedPolygon(ver, face);
 
         ctx.closePath();
         ctx.stroke();
@@ -173,13 +213,13 @@ class Renderer {
 
       let intersections = scene.camera.pointModelIntersections(lines);
 
-      for (let i = 0; i < intersections.length; i++) {
+      for (let i = 0; i < intersections[0].length; i++) {
         ctx.save();
         ctx.beginPath();
         ctx.fillStyle = "green";
         ctx.strokeStyle = "green";
 
-        ctx.arc(intersections[i].x, intersections[i].y, 2, 0, 2 * Math.PI);
+        ctx.arc(intersections[0][i].x, intersections[0][i].y, 2, 0, 2 * Math.PI);
 
         ctx.closePath();
         ctx.fill();
@@ -188,6 +228,34 @@ class Renderer {
       }
 
       lines.forEach((line) => {
+        /*ctx.save();
+        ctx.beginPath();
+
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
+
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();*/
+      });
+      intersections[1].forEach(line => {
+        /*ctx.save();
+        ctx.beginPath();
+
+        ctx.moveTo(line.start.x, line.start.y);
+        ctx.lineTo(line.end.x, line.end.y);
+
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();*/
+      });
+
+      console.log("intersections", intersections);
+
+      let arr = scene.camera.hiddenLineRemoval(intersections[1], polys);
+      console.log(arr);
+
+      arr.forEach((line, i) => {
         ctx.save();
         ctx.beginPath();
 
@@ -197,10 +265,7 @@ class Renderer {
         ctx.closePath();
         ctx.stroke();
         ctx.restore();
-      });
-
-      console.log("intersections", intersections);
-
+      })
 
       vertices.forEach(vertex => {
         ctx.save();

@@ -126,37 +126,130 @@ class Camera {
     }
   ]
   */
-  generateConbinations(arr) {
-    let res = [];
-    let biCo = this.faculty(arr.length)/this.faculty(arr.length - 2); // binomial coefficient = n!/(n-k)!; n = count of object; k = number of objects selected in one run
-    for (let i = 0; i < biCo; i++) {
-      
+  allPossibleCombinations(items, isCombination=false){
+    // finding all possible combinations of the last 2 items
+    // remove those 2, add these combinations
+    // isCombination shows if the last element is itself part of the combination series
+    if(items.length == 1){
+       return items[0]
     }
-    return res;
+    else if(items.length == 2){
+       var combinations = []
+       for (var i=0; i<items[1].length; i++){
+           for(var j=0; j<items[0].length; j++){
+               if(isCombination){
+                   // clone array to not modify original array
+                   var combination = items[1][i].slice();
+                   combination.push(items[0][j]);
+               }
+               else{
+                   var combination = [items[1][i], items[0][j]];
+               }
+               combinations.push(combination);
+           }
+       }
+       return combinations
+    }
+    else if(items.length > 2){
+       var last2 = items.slice(-2);
+       var butLast2 = items.slice(0, items.length - 2);
+       last2 = allPossibleCombinations(last2, isCombination);
+       butLast2.push(last2)
+       var combinations = butLast2;
+       return allPossibleCombinations(combinations, isCombination=true)
+    }
   }
   pointModelIntersections(lines) { // lines = [ProjectedLine]
     let vertices = [];
-    for (let i = 0; i < lines.length; i++) {
+    let inLines = [];
+    let combinations = this.allPossibleCombinations([lines.slice(0, lines.length / 2), lines.slice(lines.length / 2 + 1, lines.length - 1)]);
+    for (let i = 0; i < combinations.length; i++) {
+      if (combinations[i][0] != combinations[i][1]) {
+        let lineVector1 = new Vector2D(combinations[i][0].start, combinations[i][0].end);
+        let lineVector2 = new Vector2D(combinations[i][1].start, combinations[i][1].end);
+        let intersect = this.calculateIntersection(lineVector1, lineVector2);//this.lineIntersection(lineVector1, lineVector2);
+        if (intersect) {
+          if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
+            vertices.push(intersect.v);
+          }
+          let i1 = new IntersectionLine(lineVector1.start, intersect.v, combinations[i][0].start);
+          let i2 = new IntersectionLine(lineVector1.end, intersect.v, combinations[i][0].end);
+          let i3 = new IntersectionLine(lineVector2.start, intersect.v, combinations[i][1].start);
+          let i4 = new IntersectionLine(lineVector2.end, intersect.v, combinations[i][1].end);
+          inLines.push(i1, i2, i3, i4);
+        } else {
+          let i1 = new IntersectionLine(lineVector1.start, lineVector1.end, combinations[i][0].start);
+          let i2 = new IntersectionLine(lineVector2.start, lineVector2.end, combinations[i][1].start);
+          inLines.push(i1, i2);
+        }
+      }
+    }
+    /*for (let i = 0; i < lines.length; i++) {
       let lineVector1 = new Vector2D(lines[i].start, lines[i].end);
       for (let j = 0; j < lines.length; j++) {
         if (lines[j] != lines[i]) {
+          console.log("hji");
           let lineVector2 = new Vector2D(lines[j].start, lines[j].end);
           let intersect = this.calculateIntersection(lineVector1, lineVector2);//this.lineIntersection(lineVector1, lineVector2);
           if (intersect) {
             if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
               vertices.push(intersect.v);
             }
+            let i1 = new IntersectionLine(lineVector1.start, intersect.v, lines[i].start);
+            let i2 = new IntersectionLine(lineVector1.end, intersect.v, lines[i].end);
+            let i3 = new IntersectionLine(lineVector2.start, intersect.v, lines[j].start);
+            let i4 = new IntersectionLine(lineVector2.end, intersect.v, lines[j].end);
+            inLines.push(i1, i2, i3, i4);
+          } else {
+            let i1 = new IntersectionLine(lineVector1.start, lineVector1.end, lines[i].start);
+            let i2 = new IntersectionLine(lineVector2.start, lineVector2.end, lines[j].start);
+            inLines.push(i1, i2);
           }
         }
       }
-    }
-    return vertices;
+    }*/
+    return [vertices, inLines];
   }
 
-  hiddenLineRemoval(scene, projectedLines) { // TODO
-    for (let i = 0; i < projectedLines.length; i++) {
-
+  getFaces(objects) {
+    let arr = [];
+    for (let i = 0; i < objects.length; i++) {
+      for (let j = 0; j < objects[i].faces.length; j++) {
+        arr.push(objects[i].faces[j]);
+      }
     }
+    return arr;
+  }
+
+  toPolygon(faces) {
+    let arr = [];
+    for (let i = 0; i < faces.length; i++) {
+      arr.push(new Polygon2D(faces[i]));
+    }
+    return arr;
+  }
+
+  hiddenLineRemoval(interLines, polys) { // interLines == [IntersectionLine]; polys == [ProjectedPolygon]
+    let newArr = [];
+
+    interLines.forEach((line, i) => {
+      console.log(line);
+      polys.forEach((poly, j) => {
+        if (this.inside(line.end, poly.vertices)) {
+          if (line.z < poly.face[0].z) {
+            //newArr.push(line);
+          } else {
+            newArr.push(line);
+          }
+        } else {
+          //newArr.push(line);
+        }
+      });
+    });
+    newArr.filter((item, pos, self) => {
+
+    });
+    return newArr;
   }
 
   project(vertex) {
