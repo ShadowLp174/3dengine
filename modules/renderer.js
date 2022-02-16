@@ -88,18 +88,29 @@ class IntersectionLine {
     this.end = end;
     this.originalStart = originalStart;
 
-    /*let dx = this.start.x - this.end.x;
+    let dx = this.start.x - this.end.x;
     let dy = this.start.y - this.end.y;
     let h = Math.sqrt(dx*dx + dy*dy);
 
-    h /= 2;
-    let alpha = Math.atan(dy/dy);
+    h = h/2;
+    let alpha = Math.atan(dx/dy);
 
-    let x = Math.sin(alpha)*h;
-    let y = Math.cos(alpha)*h;
+    let x = Math.abs(Math.sin(alpha)*h);
+    let y = Math.abs(Math.cos(alpha)*h);
 
-    let middle = new Vertex2D(start.x - x, end.y - y);
-    this.middle = middle;*/
+    if (start.x < end.x) {
+      x = end.x - x;
+    } else {
+      x = start.x - x;
+    }
+    if (start.y < end.y) {
+      y = end.y - y;
+    } else {
+      y = start.y - y;
+    }
+
+    let middle = new Vertex2D(x, y);
+    this.middle = middle;
 
     this.z = originalStart.z;
     this.x = originalStart.x;
@@ -258,14 +269,19 @@ class Renderer {
       arr.forEach((line, i) => {
         ctx.save();
         ctx.beginPath();
-
         ctx.moveTo(line.start.x, line.start.y);
         ctx.lineTo(line.end.x, line.end.y);
-
         ctx.closePath();
         ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(line.middle.x, line.middle.y, 2, 0, 2*Math.PI);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+
         ctx.restore();
-      })
+      });
 
       vertices.forEach(vertex => {
         ctx.save();

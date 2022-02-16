@@ -11,11 +11,16 @@ class Camera {
     return this;
   }
 
-  inside(point, vs) { // point = Vertex2D; vs = Polygon2D
+  inside(point, vs, start, end) { // point = Vertex2D; vs = Polygon2D vertices
     // ray-casting algorithm based on
     // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html/pnpoly.html
 
     var x = point.x, y = point.y;
+
+    let cs = vs.filter(item => {return item.equals(start);}).length > 0;
+    let ce = vs.filter(item => {return item.equals(end);}).length > 0;
+
+    if (cs && ce) return true;
 
     var inside = false;
     for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
@@ -28,6 +33,29 @@ class Camera {
     }
 
     return inside;
+  }
+  insidePoly(point, poly) {
+    let x = point.x, y = point.y;
+
+    let cornersX = poly.vertices.map(item => item.x);
+    let cornersY = poly.vertices.map(item => item.y);
+
+    var i, j=cornersX.length-1 ;
+    var odd = false;
+
+    var pX = cornersX;
+    var pY = cornersY;
+
+    for (i=0; i<cornersX.length; i++) {
+        if ((pY[i]< y && pY[j]>=y ||  pY[j]< y && pY[i]>=y)
+            && (pX[i]<=x || pX[j]<=x)) {
+              odd ^= (pX[i] + (y-pY[i])*(pX[j]-pX[i])/(pY[j]-pY[i])) < x;
+        }
+
+        j=i;
+    }
+
+    return odd;
   }
   overlapping(poly1, poly2) { // poly1 = poly2 = Polygon2D
     for (let i = 0; i < poly1.vertices.length; i++) {
@@ -159,6 +187,26 @@ class Camera {
        return allPossibleCombinations(combinations, isCombination=true)
     }
   }
+  removeDuplicates(arr, intersectionLines) { // intersectionLines {boolean}
+    let res = [];
+    for (let i = 0; i < arr.length; i++) {
+      let sx = arr[i].start.x;
+      let sy = arr[i].start.y;
+      let ex = arr[i].end.x;
+      let ey = arr[i].end.y;
+      let os = arr[i].originalStart;
+      if (intersectionLines) {
+        if (arr.filter(item => {return item.start.x == sx && item.start.y == sy && item.end.x == ex && item.end.y == sy && item.originalStart.equals(os)}).length == 0) {
+          res.push(arr[i]);
+        }
+      } else {
+        if (arr.filter(item => {return item.start.x == sx && item.start.y == sy && item.end.x == ex && item.end.y == sy}).length == 0) {
+          res.push(arr[i]);
+        }
+      }
+    }
+    return res;
+  }
   pointModelIntersections(lines) { // lines = [ProjectedLine]
     let vertices = [];
     let inLines = [];
@@ -172,18 +220,19 @@ class Camera {
           if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
             vertices.push(intersect.v);
           }
-          let i1 = new IntersectionLine(lineVector1.start, intersect.v, combinations[i][0].start);
-          let i2 = new IntersectionLine(lineVector1.end, intersect.v, combinations[i][0].end);
-          let i3 = new IntersectionLine(lineVector2.start, intersect.v, combinations[i][1].start);
-          let i4 = new IntersectionLine(lineVector2.end, intersect.v, combinations[i][1].end);
+          let i1 = new IntersectionLine(lineVector1.start, intersect.v, combinations[i][0].originalStart);
+          let i2 = new IntersectionLine(lineVector1.end, intersect.v, combinations[i][0].originalEnd);
+          let i3 = new IntersectionLine(lineVector2.start, intersect.v, combinations[i][1].originalStart);
+          let i4 = new IntersectionLine(lineVector2.end, intersect.v, combinations[i][1].originalEnd);
           inLines.push(i1, i2, i3, i4);
         } else {
-          let i1 = new IntersectionLine(lineVector1.start, lineVector1.end, combinations[i][0].start);
-          let i2 = new IntersectionLine(lineVector2.start, lineVector2.end, combinations[i][1].start);
+          let i1 = new IntersectionLine(lineVector1.start, lineVector1.end, combinations[i][0].originalStart);
+          let i2 = new IntersectionLine(lineVector2.start, lineVector2.end, combinations[i][1].originalStart);
           inLines.push(i1, i2);
         }
       }
     }
+    inLines = this.removeDuplicates(inLines, true);
     /*for (let i = 0; i < lines.length; i++) {
       let lineVector1 = new Vector2D(lines[i].start, lines[i].end);
       for (let j = 0; j < lines.length; j++) {
@@ -233,22 +282,22 @@ class Camera {
     let newArr = [];
 
     interLines.forEach((line, i) => {
-      console.log(line);
       polys.forEach((poly, j) => {
-        if (this.inside(line.end, poly.vertices)) {
+        if (this.inside(line.middle, poly.vertices, line.start, line.end)) {
           if (line.z < poly.face[0].z) {
             //newArr.push(line);
           } else {
             newArr.push(line);
           }
         } else {
-          //newArr.push(line);
+          newArr.push(line);
         }
       });
     });
     newArr.filter((item, pos, self) => {
 
     });
+    newArr = this.removeDuplicates(newArr, true);
     return newArr;
   }
 
