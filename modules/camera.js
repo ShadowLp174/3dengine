@@ -176,7 +176,7 @@ class Camera {
                combinations.push(combination);
            }
        }
-       return combinations
+       return combinations;
     }
     else if(items.length > 2){
        var last2 = items.slice(-2);
@@ -211,6 +211,21 @@ class Camera {
     let vertices = [];
     let inLines = [];
     let combinations = this.allPossibleCombinations([lines.slice(0, lines.length / 2), lines.slice(lines.length / 2 + 1, lines.length - 1)]);
+    console.log(combinations);
+    function removeDupes(c) {
+      let arr = [];
+      c.forEach((item, i) => {
+        c.forEach((item1, j) => {
+          if (item1[0].equals(item[0]) && item1[1].equals(item[1]) && item1[0].equals(item[1])) {
+            
+          } else {
+            arr.push(item);
+          }
+        });
+      });
+      return arr;
+    }
+    console.log(removeDupes(combinations).length);
     for (let i = 0; i < combinations.length; i++) {
       if (combinations[i][0] != combinations[i][1]) {
         let lineVector1 = new Vector2D(combinations[i][0].start, combinations[i][0].end);
@@ -280,7 +295,6 @@ class Camera {
 
   hiddenLineRemoval(interLines, polys) { // interLines == [IntersectionLine]; polys == [ProjectedPolygon]
     let newArr = [];
-
     interLines.forEach((line, i) => {
       polys.forEach((poly, j) => {
         if (this.inside(line.middle, poly.vertices, line.start, line.end)) {

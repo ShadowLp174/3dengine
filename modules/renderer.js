@@ -81,6 +81,10 @@ class ProjectedLine {
     this.originalEnd = originalEnd;
     return this;
   }
+
+  equals(p) {
+    return this.start == p.start && this.end == p.end && this.originalStart == p.originalStart && this.originalEnd == p.originalEnd;
+  }
 }
 class IntersectionLine {
   constructor(start, end, originalStart) {
