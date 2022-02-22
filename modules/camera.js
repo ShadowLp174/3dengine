@@ -214,14 +214,10 @@ class Camera {
     console.log(combinations);
     function removeDupes(c) {
       let arr = [];
-      c.forEach((item, i) => {
-        c.forEach((item1, j) => {
-          if (item1[0].equals(item[0]) && item1[1].equals(item[1]) && item1[0].equals(item[1])) {
-            
-          } else {
-            arr.push(item);
-          }
-        });
+      c.forEach((item, index) => {
+        if (c.filter((i, pos) => {return ((item[0].equals(i[0]) && item[1].equals(i[1])) || item[1].equals(i[0])) && pos != index}).length == 0) {
+          arr.push(item);
+        }
       });
       return arr;
     }
