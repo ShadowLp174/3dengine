@@ -215,7 +215,7 @@ class Camera {
     function removeDupes(c) {
       let arr = [];
       c.forEach((item, index) => {
-        if (c.filter((i, pos) => {return ((item[0].equals(i[0]) && item[1].equals(i[1])) || item[1].equals(i[0])) && pos != index}).length == 0) {
+        if (c.filter((i, pos) => {return ((item[0].equals(i[0]) && item[1].equals(i[1])) || (item[1].equals(i[0]) && item[0].equals(i[1]))) && pos != index}).length == 0) {
           arr.push(item);
         }
       });
