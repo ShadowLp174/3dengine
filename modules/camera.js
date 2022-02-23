@@ -73,7 +73,50 @@ class Camera {
     return res;
   }
 
-  lineIntersection(vector1, vector2) { // original by paul bourke
+  intersect(v1, v2) {
+    let x1 = v1.start.x;
+    let x2 = v1.end.x;
+    let y1 = v1.start.y;
+    let y2 = v1.end.y;
+    let x3 = v2.start.x;
+    let x4 = v2.end.x;
+    let y3 = v2.start.y;
+    let y4 = v2.end.y;
+
+    // Check if none of the lines are of length 0
+  	if ((x1 === x2 && y1 === y2) || (x3 === x4 && y3 === y4)) {
+  		return false
+  	}
+
+  	let denominator = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
+
+    // Lines are parallel
+  	if (denominator === 0) {
+  		return false
+  	}
+
+  	let ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denominator
+  	let ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denominator
+
+    // is the intersection along the segments
+  	if (ua < 0 || ua > 1 || ub < 0 || ub > 1) {
+  		return false
+  	}
+
+
+    // Return a object with the x and y coordinates of the intersection
+  	let x = x1 + ua * (x2 - x1);
+  	let y = y1 + ua * (y2 - y1);
+    let v = new Vertex2D(x, y);
+
+    // is the intersection on one woth the start vertices
+    if (v.equals(v1.start) || v.equals(v1.end) || v.equals(v2.start) || v.equals(v2.end)) {
+      return false;
+    }
+
+  	return {v: v}
+  }
+  lineIntersection(vector1, vector2, includeLineVertices) { // original by paul bourke
     let x1 = vector1.start.x; let y1 = vector1.start.y;
     let x2 = vector1.end.x; let y2 = vector1.end.y;
     let x3 = vector2.start.x; let y3 = vector2.start.y;
@@ -85,14 +128,32 @@ class Camera {
     ua = ((x4 - x3)*(y1 - y3) - (y4 - y3)*(x1 - x3))/denom;
     ub = ((x2 - x1)*(y1 - y3) - (y2 - y1)*(x1 - x3))/denom;
 
-    let v = new Vertex2D(x1 + ua * (x2 - x1), y1 + ua * (y2 - y1));
-    return {
+    let v = new Vertex2D(x1 + ua * (x2 - x1), y1 + ua * (y2 - y1));let p = v;
+    function distance(p1, p2) {
+      let a = p1.x - p2.x;
+      let b = p1.y - p2.y;
+      let c = Math.sqrt(a*a + b*b);
+      return c;
+    }
+
+    function onLine(vertex, vector) {
+      if (distance(vertex, vector.start) + distance(vertex, vector.end) == distance(vector.start, vector.end))
+        return true;
+      return false;
+    }
+
+    if (p.equals(vector1.start) || p.equals(vector1.end) || p.equals(vector2.start) || p.equals(vector2.end)) if (!includeLineVertices) return null;
+
+    if (!onLine(p, vector1) || !onLine(p, vector2)) return null;
+
+  	return {v: p};
+    /*return {
       v: v,
       x: x1 + ua * (x2 - x1),
       y: y1 + ua * (y2 - y1),
       seg1: ua >= 0 && ua <= 1,
       seg2: ub >= 0 && ub <= 1
-    }
+    }*/
   }
 
   calculateIntersection(v1, v2, includeLineVertices) {
@@ -129,8 +190,6 @@ class Camera {
       return c;
     }
 
-
-
     function onLine(vertex, vector) {
       if (distance(vertex, vector.start) + distance(vertex, vector.end) == distance(vector.start, vector.end))
         return true;
@@ -146,47 +205,6 @@ class Camera {
   	return {v: p};
   }
 
-  /*
-  projectedLines: [
-    Vector {
-      start: Vertex2D,
-      end: Vertex2D
-    }
-  ]
-  */
-  allPossibleCombinations(items, isCombination=false){
-    // finding all possible combinations of the last 2 items
-    // remove those 2, add these combinations
-    // isCombination shows if the last element is itself part of the combination series
-    if(items.length == 1){
-       return items[0]
-    }
-    else if(items.length == 2){
-       var combinations = []
-       for (var i=0; i<items[1].length; i++){
-           for(var j=0; j<items[0].length; j++){
-               if(isCombination){
-                   // clone array to not modify original array
-                   var combination = items[1][i].slice();
-                   combination.push(items[0][j]);
-               }
-               else{
-                   var combination = [items[1][i], items[0][j]];
-               }
-               combinations.push(combination);
-           }
-       }
-       return combinations;
-    }
-    else if(items.length > 2){
-       var last2 = items.slice(-2);
-       var butLast2 = items.slice(0, items.length - 2);
-       last2 = allPossibleCombinations(last2, isCombination);
-       butLast2.push(last2)
-       var combinations = butLast2;
-       return allPossibleCombinations(combinations, isCombination=true)
-    }
-  }
   combinate(arr) {
     let res = [];
     for (let i = 0; i < arr.length; i++) {
@@ -198,22 +216,11 @@ class Camera {
     }
     return res;
   }
-  removeDuplicates(arr, intersectionLines) { // intersectionLines {boolean}
+  removeDuplicates(arr) {
     let res = [];
     for (let i = 0; i < arr.length; i++) {
-      let sx = arr[i].start.x;
-      let sy = arr[i].start.y;
-      let ex = arr[i].end.x;
-      let ey = arr[i].end.y;
-      let os = arr[i].originalStart;
-      if (intersectionLines) {
-        if (arr.filter(item => {return item.start.x == sx && item.start.y == sy && item.end.x == ex && item.end.y == sy && item.originalStart.equals(os)}).length == 0) {
-          res.push(arr[i]);
-        }
-      } else {
-        if (arr.filter(item => {return item.start.x == sx && item.start.y == sy && item.end.x == ex && item.end.y == sy}).length == 0) {
-          res.push(arr[i]);
-        }
+      if (arr.filter((item, pos) => {return item.equals(arr[i]) && pos != i}).length == 0) {
+        res.push(arr[i]);
       }
     }
     return res;
@@ -223,21 +230,22 @@ class Camera {
     let inLines = [];
     let combinations = this.combinate(lines);
     console.log(combinations);
-    function removeDupes(c) {
-      let arr = [];
-      c.forEach((item, index) => {
-        if (c.filter((i, pos) => {return ((item[0].equals(i[0]) && item[1].equals(i[1])) || (item[1].equals(i[0]) && item[0].equals(i[1]))) && pos != index}).length == 0) {
-          arr.push(item);
-        }
-      });
-      return arr;
+    function distance(p1, p2) {
+      let a = p1.x - p2.x;
+      let b = p1.y - p2.y;
+      let c = Math.sqrt(a*a + b*b);
+      return c;
     }
-    console.log(removeDupes(combinations).length);
+    function onLine(vertex, vector) {
+      if (distance(vertex, vector.start) + distance(vertex, vector.end) == distance(vector.start, vector.end))
+        return true;
+      return false;
+    }
     for (let i = 0; i < combinations.length; i++) {
       if (combinations[i][0] != combinations[i][1]) {
         let lineVector1 = new Vector2D(combinations[i][0].start, combinations[i][0].end);
         let lineVector2 = new Vector2D(combinations[i][1].start, combinations[i][1].end);
-        let intersect = this.calculateIntersection(lineVector1, lineVector2);//this.lineIntersection(lineVector1, lineVector2);
+        let intersect = this.intersect(lineVector1, lineVector2);//this.lineIntersection(lineVector1, lineVector2);//this.calculateIntersection(lineVector1, lineVector2);
         if (intersect) {
           if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
             vertices.push(intersect.v);
@@ -254,7 +262,8 @@ class Camera {
         }
       }
     }
-    inLines = this.removeDuplicates(inLines, true);
+    // TODO: dupe removal
+    //inLines = this.removeDuplicates(inLines, true);
     /*for (let i = 0; i < lines.length; i++) {
       let lineVector1 = new Vector2D(lines[i].start, lines[i].end);
       for (let j = 0; j < lines.length; j++) {
@@ -315,10 +324,7 @@ class Camera {
         }
       });
     });
-    newArr.filter((item, pos, self) => {
-
-    });
-    newArr = this.removeDuplicates(newArr, true);
+    //newArr = this.removeDuplicates(newArr);
     return newArr;
   }
 

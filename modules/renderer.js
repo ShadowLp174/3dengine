@@ -240,8 +240,6 @@ class Renderer {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      console.log("removed", this.removeDuplicates(lines));
-      //lines = this.removeDuplicates(lines);
       let intersections = scene.camera.pointModelIntersections(lines);
 
       for (let i = 0; i < intersections[0].length; i++) {
@@ -282,7 +280,6 @@ class Renderer {
         ctx.stroke();
         ctx.restore();
       });
-      //return null;
       intersections[1].forEach(line => {
         /*ctx.save();
         ctx.beginPath();
