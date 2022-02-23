@@ -263,7 +263,7 @@ class Camera {
       }
     }
     // TODO: dupe removal
-    //inLines = this.removeDuplicates(inLines, true);
+    inLines = this.removeDuplicates(inLines);
     /*for (let i = 0; i < lines.length; i++) {
       let lineVector1 = new Vector2D(lines[i].start, lines[i].end);
       for (let j = 0; j < lines.length; j++) {

@@ -91,10 +91,11 @@ class ProjectedLine {
   }
 }
 class IntersectionLine {
-  constructor(start, end, originalStart) {
+  constructor(start, end, originalStart, originalEnd) {
     this.start = start;
     this.end = end;
     this.originalStart = originalStart;
+    this.originalEnd = originalEnd;
 
     let dx = this.start.x - this.end.x;
     let dy = this.start.y - this.end.y;
@@ -121,7 +122,6 @@ class IntersectionLine {
     this.middle = middle;
 
     this.z = originalStart.z;
-    this.x = originalStart.x;
     return this;
   }
 
