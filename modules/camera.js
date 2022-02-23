@@ -187,6 +187,17 @@ class Camera {
        return allPossibleCombinations(combinations, isCombination=true)
     }
   }
+  combinate(arr) {
+    let res = [];
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = i; j < arr.length; j++) {
+        if (j != i) {
+          res.push([arr[i], arr[j]]);
+        }
+      }
+    }
+    return res;
+  }
   removeDuplicates(arr, intersectionLines) { // intersectionLines {boolean}
     let res = [];
     for (let i = 0; i < arr.length; i++) {
@@ -210,7 +221,7 @@ class Camera {
   pointModelIntersections(lines) { // lines = [ProjectedLine]
     let vertices = [];
     let inLines = [];
-    let combinations = this.allPossibleCombinations([lines.slice(0, lines.length / 2), lines.slice(lines.length / 2 + 1, lines.length - 1)]);
+    let combinations = this.combinate([lines.slice(0, lines.length / 2), lines.slice(lines.length / 2 + 1, lines.length - 1)]);
     console.log(combinations);
     function removeDupes(c) {
       let arr = [];
