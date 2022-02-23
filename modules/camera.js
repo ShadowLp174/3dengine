@@ -221,7 +221,7 @@ class Camera {
   pointModelIntersections(lines) { // lines = [ProjectedLine]
     let vertices = [];
     let inLines = [];
-    let combinations = this.combinate([lines.slice(0, lines.length / 2), lines.slice(lines.length / 2 + 1, lines.length - 1)]);
+    let combinations = this.combinate(lines);
     console.log(combinations);
     function removeDupes(c) {
       let arr = [];
