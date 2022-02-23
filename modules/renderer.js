@@ -71,6 +71,10 @@ class Vector2D {
 
     this.matrix = new Matrix([x, y]);
   }
+
+  equals(v) {
+    return v.start.equals(this.start) && v.end.equals(this.end);
+  }
 }
 
 class ProjectedLine {
@@ -83,7 +87,7 @@ class ProjectedLine {
   }
 
   equals(p) {
-    return this.start == p.start && this.end == p.end && this.originalStart == p.originalStart && this.originalEnd == p.originalEnd;
+    return this.start.equals(p.start) && this.end.equals(p.end) && this.originalStart.equals(p.originalStart) && this.originalEnd.equals(p.originalEnd);
   }
 }
 class IntersectionLine {
@@ -144,6 +148,14 @@ class Renderer {
     }
     this.activeCam = new Camera();
     return this;
+  }
+
+  removeDuplicates(arr) {
+    let res = [];
+    for (let i = 0; i < arr.length; i++) {
+      if (arr.filter((item, pos) => {return item.equals(arr[i]) && pos != i;}).length == 0) res.push(arr[i]);
+    }
+    return res;
   }
 
   render(objects, dx, dy) {
@@ -207,7 +219,9 @@ class Renderer {
           P = scene.camera.project(face[k]);
           ctx.lineTo(P.x, P.y);
           vertices.push(P);
-          lines.push(new ProjectedLine(last[0], P, last[1], face[k]));
+          if (lines.filter((item,pos)=>{return item.equals(new ProjectedLine(last[0],P,last[1],face[k]))}).length == 0) {
+            lines.push(new ProjectedLine(last[0], P, last[1], face[k]));
+          }
           last = [P, face[k]];
           ver.push(P);
         }
@@ -226,6 +240,8 @@ class Renderer {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      console.log("removed", this.removeDuplicates(lines));
+      //lines = this.removeDuplicates(lines);
       let intersections = scene.camera.pointModelIntersections(lines);
 
       for (let i = 0; i < intersections[0].length; i++) {
@@ -253,6 +269,20 @@ class Renderer {
         ctx.stroke();
         ctx.restore();*/
       });
+      vertices.forEach(vertex => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.fillStyle = "red";
+        ctx.strokeStyle = "red";
+
+        ctx.arc(vertex.x, vertex.y, 1, 0, 2 * Math.PI);
+
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      });
+      //return null;
       intersections[1].forEach(line => {
         /*ctx.save();
         ctx.beginPath();
@@ -284,20 +314,6 @@ class Renderer {
         ctx.stroke();
         ctx.fill();
 
-        ctx.restore();
-      });
-
-      vertices.forEach(vertex => {
-        ctx.save();
-        ctx.beginPath();
-        ctx.fillStyle = "red";
-        ctx.strokeStyle = "red";
-
-        ctx.arc(vertex.x, vertex.y, 1, 0, 2 * Math.PI);
-
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
         ctx.restore();
       });
     }
