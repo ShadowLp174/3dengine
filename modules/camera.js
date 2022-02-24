@@ -219,7 +219,7 @@ class Camera {
   removeDuplicates(arr) {
     let res = [];
     for (let i = 0; i < arr.length; i++) {
-      if (arr.filter((item, pos) => {return item.equals(arr[i]) && pos != i}).length == 0) {
+      if (res.filter((item, pos) => {return item.equals(arr[i]) && pos != i}).length == 0) {
         res.push(arr[i]);
       }
     }
@@ -262,7 +262,6 @@ class Camera {
         }
       }
     }
-    // TODO: dupe removal
     inLines = this.removeDuplicates(inLines);
     /*for (let i = 0; i < lines.length; i++) {
       let lineVector1 = new Vector2D(lines[i].start, lines[i].end);
