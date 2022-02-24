@@ -229,7 +229,6 @@ class Camera {
     let vertices = [];
     let inLines = [];
     let combinations = this.combinate(lines);
-    console.log(combinations);
     function distance(p1, p2) {
       let a = p1.x - p2.x;
       let b = p1.y - p2.y;
@@ -263,30 +262,6 @@ class Camera {
       }
     }
     inLines = this.removeDuplicates(inLines);
-    /*for (let i = 0; i < lines.length; i++) {
-      let lineVector1 = new Vector2D(lines[i].start, lines[i].end);
-      for (let j = 0; j < lines.length; j++) {
-        if (lines[j] != lines[i]) {
-          console.log("hji");
-          let lineVector2 = new Vector2D(lines[j].start, lines[j].end);
-          let intersect = this.calculateIntersection(lineVector1, lineVector2);//this.lineIntersection(lineVector1, lineVector2);
-          if (intersect) {
-            if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
-              vertices.push(intersect.v);
-            }
-            let i1 = new IntersectionLine(lineVector1.start, intersect.v, lines[i].originalStart);
-            let i2 = new IntersectionLine(lineVector1.end, intersect.v, lines[i].originalEnd);
-            let i3 = new IntersectionLine(lineVector2.start, intersect.v, lines[j].originalStart);
-            let i4 = new IntersectionLine(lineVector2.end, intersect.v, lines[j].originalEnd);
-            inLines.push(i1, i2, i3, i4);
-          } else {
-            let i1 = new IntersectionLine(lineVector1.start, lineVector1.end, lines[i].originalStart);
-            let i2 = new IntersectionLine(lineVector2.start, lineVector2.end, lines[j].originalStart);
-            inLines.push(i1, i2);
-          }
-        }
-      }
-    }*/
     return [vertices, inLines];
   }
 
@@ -313,8 +288,18 @@ class Camera {
     interLines.forEach((line, i) => {
       polys.forEach((poly, j) => {
         if (this.inside(line.middle, poly.vertices, line.start, line.end)) {
-          if (line.z < poly.face[0].z) {
-            //newArr.push(line);
+          function s(a, b) {
+            if (a.z < b.z) {
+              return 1;
+            } else if (a.z > b.z) {
+              return -1;
+            } else {return 0;}
+          }
+
+          let polyZ = poly.face.sort(s)[0];
+          //console.log(line.z, polyZ.z, line.z < polyZ.z);
+          if (line.z < polyZ.z) {
+            // hidden
           } else {
             newArr.push(line);
           }
@@ -323,7 +308,7 @@ class Camera {
         }
       });
     });
-    //newArr = this.removeDuplicates(newArr);
+    newArr = this.removeDuplicates(newArr);
     return newArr;
   }
 

@@ -31,6 +31,20 @@ class ProjectedPolygon {
 
     return this;
   }
+
+  equals(p) {
+    this.vertices.forEach((v, i) => {
+      if (!v.equals(p.vertices[i])) {
+        return false;
+      }
+    });
+    this.face.forEach((f, i) => {
+      if (!f.equals(p.face[i])) {
+        return false;
+      }
+    });
+    return true;
+  }
 }
 
 class Matrix {
@@ -121,6 +135,33 @@ class IntersectionLine {
     let middle = new Vertex2D(x, y);
     this.middle = middle;
 
+    // 3-dimensional middle (between original start and end)
+    /*function calcMiddle(startVertex, endVertex) { // for z-cooridinate calculation set the x values of the vertices to the desired z values
+      let dx = startVertex.x - endVertex.x;
+      let dy = startVertex.y - endVertex.y;
+      let h = Math.sqrt(dx*dx + dy*dy);
+
+      h = h/2;
+      let alpha = Math.atan(dx/dy);
+
+      let x = Math.abs(Math.sin(alpha)*h);
+      let y = Math.abs(Math.cos(alpha)*h);
+
+      if (start.x < end.x) {
+        x = end.x - x;
+      } else {
+        x = start.x - x;
+      }
+      if (start.y < end.y) {
+        y = end.y - y;
+      } else {
+        y = start.y - y;
+      }
+      return {y: y, v: x};
+    }
+    let x3d = calcMiddle(new Vertex2D(originalStart.x, originalStart.y), new Vertex2D(originalEnd.x, originalEnd.y));
+    console.log("start, end, x", originalStart, originalEnd, x3d);*/
+
     this.z = originalStart.z;
     return this;
   }
@@ -153,7 +194,7 @@ class Renderer {
   removeDuplicates(arr) {
     let res = [];
     for (let i = 0; i < arr.length; i++) {
-      if (arr.filter((item, pos) => {return item.equals(arr[i]) && pos != i;}).length == 0) res.push(arr[i]);
+      if (res.filter((item, pos) => {return item.equals(arr[i]) && pos != i;}).length == 0) res.push(arr[i]);
     }
     return res;
   }
@@ -226,7 +267,7 @@ class Renderer {
           ver.push(P);
         }
 
-        polys[i] = new ProjectedPolygon(ver, face);
+        polys[j] = new ProjectedPolygon(ver, face);
 
         ctx.closePath();
         ctx.stroke();
@@ -235,7 +276,9 @@ class Renderer {
       }
     }
     if (debugging) {
+      console.log(polys);
       console.log(vertices);
+      lines = this.removeDuplicates(lines);
       console.log(lines);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -28,8 +28,8 @@ class Cube {
 
     let v = this.vertices;
     this.faces = [
-      [v[2], v[3], v[7], v[6]],
       [v[0], v[3], v[7], v[4]],
+      [v[2], v[3], v[7], v[6]],
       [v[5], v[4], v[0], v[1]],
       [v[0], v[1], v[2], v[3]],
       [v[4], v[5], v[6], v[7]],
