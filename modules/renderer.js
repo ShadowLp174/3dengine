@@ -105,11 +105,10 @@ class ProjectedLine {
   }
 }
 class IntersectionLine {
-  constructor(start, end, originalStart, originalEnd) {
+  constructor(start, end, originalStart, z) {
     this.start = start;
     this.end = end;
     this.originalStart = originalStart;
-    this.originalEnd = originalEnd;
 
     let dx = this.start.x - this.end.x;
     let dy = this.start.y - this.end.y;
@@ -162,12 +161,8 @@ class IntersectionLine {
     let x3d = calcMiddle(new Vertex2D(originalStart.x, originalStart.y), new Vertex2D(originalEnd.x, originalEnd.y));
     console.log("start, end, x", originalStart, originalEnd, x3d);*/
 
-    this.z = originalStart.z;
+    this.z = z;
     return this;
-  }
-
-  getMiddle3D() {
-    
   }
 
   equals(line) {return line.start.equals(this.start) && line.end.equals(this.end) && line.originalStart.equals(this.originalStart)}
@@ -340,6 +335,7 @@ class Renderer {
 
       console.log("intersections", intersections);
 
+      console.log(intersections[1]);
       let arr = scene.camera.hiddenLineRemoval(intersections[1], polys);
       console.log(arr);
 

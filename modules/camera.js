@@ -249,19 +249,52 @@ class Camera {
           if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
             vertices.push(intersect.v);
           }
-          let lineVector3 = new Vector2D(new Vertex2D(combinations[i][0].originalStart.z, combinations[i][0].originalStart.x + combinations[i][0].originalStart.y), new Vertex2D(combinations[i][0].originalEnd.z, combinations[i][0].originalEnd.x +  + combinations[i][0].originalEnd.y))
-          let lineVector4 = new Vector2D(new Vertex2D(combinations[i][1].originalStart.z, combinations[i][1].originalStart.x + combinations[i][1].originalStart.y), new Vertex2D(combinations[i][1].originalEnd.z, combinations[i][1].originalEnd.x +  + combinations[i][1].originalEnd.y))
-          console.log(lineVector3, lineVector4);
-          let intersect3D = this.intersect(lineVector3, lineVector4);
-          console.log(intersect3D);
-          let i1 = new IntersectionLine(lineVector1.start, intersect.v, combinations[i][0].originalStart);
-          let i2 = new IntersectionLine(lineVector1.end, intersect.v, combinations[i][0].originalEnd);
-          let i3 = new IntersectionLine(lineVector2.start, intersect.v, combinations[i][1].originalStart);
-          let i4 = new IntersectionLine(lineVector2.end, intersect.v, combinations[i][1].originalEnd);
+          let x1 = combinations[i][0].start.x;
+          let y1 = combinations[i][0].start.y;
+          let dx1 = intersect.v.x - x1;
+          let dy1 = intersect.v.y - y1;
+          let l1 = Math.sqrt(Math.abs(dx1*dx1) + Math.abs(dy1*dy1));
+          let lm1 = Math.sqrt(Math.abs(x1*x1) + Math.abs(y1*y1));
+          let percentage1 = l1/(lm1 / 100);
+
+          let dz1 = Math.abs(combinations[i][0].originalEnd.z - combinations[i][0].originalStart.z);
+          let e1 = combinations[i][0].originalEnd;
+          let s1 = combinations[i][0].originalStart;
+          let z1 = 0;
+          if (e1.z < s1.z) {
+            z1 = e1.z + (dz1*(percentage1/100));
+          } else {
+            z1 = s1.z + (dz1*(percentage1/100));
+          }
+
+          let x2 = combinations[i][1].start.x;
+          let y2 = combinations[i][1].start.y;
+          let dx2 = intersect.v.x - x2;
+          let dy2 = intersect.v.y - y2;
+          let l2 = Math.sqrt(Math.abs(dx2*dx2) + Math.abs(dy2*dy2));
+          let lm2 = Math.sqrt(Math.abs(x2*x2) + Math.abs(y2*y2));
+          let percentage2 = l2/(lm2 / 100);
+
+          let dz2 = Math.abs(combinations[i][1].originalEnd.z - combinations[i][1].originalStart.z);
+          let e2 = combinations[i][1].originalEnd;
+          let s2 = combinations[i][1].originalStart;
+          let z2 = 0;
+          if (e2.z < s2.z) {
+            z2 = e2.z + (dz2*(percentage2/100));
+          } else {
+            z2 = s2.z + (dz2*(percentage2/100));
+          }
+
+          let i1 = new IntersectionLine(lineVector1.start, intersect.v, combinations[i][0].originalStart, z1);
+          let i2 = new IntersectionLine(lineVector1.end, intersect.v, combinations[i][0].originalEnd, z1);
+          let i3 = new IntersectionLine(lineVector2.start, intersect.v, combinations[i][1].originalStart, z2);
+          let i4 = new IntersectionLine(lineVector2.end, intersect.v, combinations[i][1].originalEnd, 2);
           inLines.push(i1, i2, i3, i4);
         } else {
-          let i1 = new IntersectionLine(lineVector1.start, lineVector1.end, combinations[i][0].originalStart);
-          let i2 = new IntersectionLine(lineVector2.start, lineVector2.end, combinations[i][1].originalStart);
+          let z1 = (combinations[i][0].originalStart.z + combinations[i][0].originalEnd.z) / 2;
+          let z2 = (combinations[i][1].originalStart.z + combinations[i][1].originalEnd.z) / 2;
+          let i1 = new IntersectionLine(lineVector1.start, lineVector1.end, combinations[i][0].originalStart, z1);
+          let i2 = new IntersectionLine(lineVector2.start, lineVector2.end, combinations[i][1].originalStart, z2);
           inLines.push(i1, i2);
         }
       }
@@ -304,6 +337,7 @@ class Camera {
           let polyZ = poly.face.sort(s)[0];
           //console.log(line.z, polyZ.z, line.z < polyZ.z);
           if (line.z < polyZ.z) {
+            console.log("removed");
             // hidden
           } else {
             newArr.push(line);
@@ -336,9 +370,11 @@ class Camera {
 
     return new Vertex2D(x, y);
   }
-  reverseProject(vertex, z) { // vertex == Vertex2D; z == z-cooridnate of the Vertex3D
-    //let x = vertex.x + ((vertex.x*z)/this.planeOffset) - ((this.scene.width*this.planeOffset)/(2*this.planeOffset)) - ((this.scene.width*z)/(2*this.planeOffset));
-    let x = (vertex.x/10) + ((vertex.x*z)/this.planeOffset) - (this.scene.width/20) - ((this.scene.width*z)/this.planeOffset);
+  reverseProject(vertex, z) { // vertex == Vertex2D; z == z-cooridnate of the Vertex3D; DISCLAIMER: NOT WORKING!
+    // let x = vertex.x + ((vertex.x*z)/this.planeOffset) - ((this.scene.width*this.planeOffset)/(2*this.planeOffset)) - ((this.scene.width*z)/(2*this.planeOffset));
+    //let x = (vertex.x/10) + ((vertex.x*z)/this.planeOffset) - (this.scene.width/20) - ((this.scene.width*z)/this.planeOffset);
+    //let x = -(((this.planeOffset+10*z)*(this.scene.width-2*vertex.x))/(20*this.planeOffset));
+    let x = (-0.5*this.planeOffset*this.scene.width+0.1*this.planeOffset*vertex.x-0.5*this.scene.width*z+vertex.x*z)/this.planeOffset;
     return x;
   }
 }

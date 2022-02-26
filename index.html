@@ -94,12 +94,12 @@
       display.innerHTML = "X: " + center.x + " Y: " + center.y + " Z: " + center.z + " HorizontalRot: " + cube.horizontalRotation;
     });
 
-    let v1 = new Vertex(10, 10, 10);
+    /*let v1 = new Vertex(10, 10, 10);
     console.log("Vertex",v1);
     let v2d = scene.camera.project(v1);
     console.log("Projected", v2d);
-    let v2 = scene.camera.reverseProject(v2d, 10);
-    console.log("Reverse-projected x", v2);
+    let v2 = scene.camera.reverseProject(v2d, 10); // not working :(
+    console.log("Reverse-projected x", v2);*/
 
     var controls = document.getElementById("controls");
     controls.children[0].appendChild(xPos);
