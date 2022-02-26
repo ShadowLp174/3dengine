@@ -249,6 +249,11 @@ class Camera {
           if (vertices.filter(item => {return item.x == intersect.v.x && item.y == intersect.v.y;}).length == 0) {
             vertices.push(intersect.v);
           }
+          let lineVector3 = new Vector2D(new Vertex2D(combinations[i][0].originalStart.z, combinations[i][0].originalStart.x + combinations[i][0].originalStart.y), new Vertex2D(combinations[i][0].originalEnd.z, combinations[i][0].originalEnd.x +  + combinations[i][0].originalEnd.y))
+          let lineVector4 = new Vector2D(new Vertex2D(combinations[i][1].originalStart.z, combinations[i][1].originalStart.x + combinations[i][1].originalStart.y), new Vertex2D(combinations[i][1].originalEnd.z, combinations[i][1].originalEnd.x +  + combinations[i][1].originalEnd.y))
+          console.log(lineVector3, lineVector4);
+          let intersect3D = this.intersect(lineVector3, lineVector4);
+          console.log(intersect3D);
           let i1 = new IntersectionLine(lineVector1.start, intersect.v, combinations[i][0].originalStart);
           let i2 = new IntersectionLine(lineVector1.end, intersect.v, combinations[i][0].originalEnd);
           let i3 = new IntersectionLine(lineVector2.start, intersect.v, combinations[i][1].originalStart);
@@ -330,5 +335,10 @@ class Camera {
     vertex.z /= 10;
 
     return new Vertex2D(x, y);
+  }
+  reverseProject(vertex, z) { // vertex == Vertex2D; z == z-cooridnate of the Vertex3D
+    //let x = vertex.x + ((vertex.x*z)/this.planeOffset) - ((this.scene.width*this.planeOffset)/(2*this.planeOffset)) - ((this.scene.width*z)/(2*this.planeOffset));
+    let x = (vertex.x/10) + ((vertex.x*z)/this.planeOffset) - (this.scene.width/20) - ((this.scene.width*z)/this.planeOffset);
+    return x;
   }
 }

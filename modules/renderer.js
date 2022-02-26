@@ -166,6 +166,10 @@ class IntersectionLine {
     return this;
   }
 
+  getMiddle3D() {
+    
+  }
+
   equals(line) {return line.start.equals(this.start) && line.end.equals(this.end) && line.originalStart.equals(this.originalStart)}
 }
 
@@ -278,7 +282,6 @@ class Renderer {
     if (debugging) {
       console.log(polys);
       console.log(vertices);
-      lines = this.removeDuplicates(lines);
       console.log(lines);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
